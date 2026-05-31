@@ -40,6 +40,7 @@ void menu_loop() {
         graphics_draw_text(disp, 80, 40, "FALLOUT: VAULT 64");
         graphics_draw_text(disp, 100, 100, (selected_option == 0) ? "> START" : "  START");
         graphics_draw_text(disp, 100, 120, (selected_option == 1) ? "> TUTORIAL" : "  TUTORIAL");
+        graphics_draw_text(disp, 100, 140, (selected_option == 2) ? "> REVIEWS" : "  REVIEWS");
         char score_text[32];
         snprintf(score_text, sizeof(score_text), "LAST SCORE: %d", final_score);
         graphics_draw_text(disp, 80, 175, score_text);
@@ -62,8 +63,15 @@ void menu_loop() {
         joypad_inputs_t joypad = joypad_get_inputs(JOYPAD_PORT_1);
 
         // Navagation
-        if (btn.d_up || joypad.stick_y > JOY_THRESHOLD)   selected_option = 0;
-        if (btn.d_down || joypad.stick_y < -JOY_THRESHOLD) selected_option = 1;
+        if (btn.d_up || joypad.stick_y > JOY_THRESHOLD) {
+            if (selected_option == 1)      selected_option = 0; // Move from Tutorial to Start
+            else if (selected_option == 2) selected_option = 1; // Move from Reviews to Tutorial
+        }
+
+        if (btn.d_down || joypad.stick_y < -JOY_THRESHOLD) {
+            if (selected_option == 0)      selected_option = 1; // Move from Start to Tutorial
+            else if (selected_option == 1) selected_option = 2; // Move from Tutorial to Reviews
+        }
         
         // Selection Logic (Checks for A OR Start)
         if (btn.a || btn.start) {
@@ -80,6 +88,10 @@ void menu_loop() {
                 state = STATE_TUTORIAL;  // Jump to your new tutorial screen
                 return;
             }
+            else if (selected_option == 2) {
+                state = STATE_REVIEWS; // This triggers your new video loop
+                return;
+    }
         }
 
 };

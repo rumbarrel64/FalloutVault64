@@ -13,10 +13,6 @@
 // Music
 static wav64_t music_wav; // Game Music
 
-// Sound Effects
-static wav64_t sfx1_wav;  // Voice Over
-static wav64_t sfx2_wav;  // Voice Over
-
 void audio_system_init(void) {
     // Initialize audio system
     audio_init(22050, 4);           // 22.05 kHz, 4 buffers
@@ -31,59 +27,20 @@ void music_load(const char *filename) {
     wav64_set_loop(&music_wav, true);
 }
 
-// Fight
-void sfx1_load(const char *filename) {
-    wav64_open(&sfx1_wav, filename);
-    wav64_set_loop(&sfx1_wav, false);  // Play once only
-}
-
-// The Hunt Begins
-void sfx2_load(const char *filename) {
-    wav64_open(&sfx2_wav, filename);
-    wav64_set_loop(&sfx2_wav, false);  // Play once only
-}
-
 // ========== PLAYING FUNCTIONS (actually start the sound) ==========
 void music_play(void) {
     wav64_play(&music_wav, CHANNEL_MUSIC);
-}
-
-// Fight
-void sfx1_play(void) {
-    wav64_play(&sfx1_wav, CHANNEL_SFX1);
-}
-
-// The Hunt Begins
-void sfx2_play(void) {
-    wav64_play(&sfx2_wav, CHANNEL_SFX1);
 }
 
 // ========== AUDIO PROCESSING (handles ALL audio - music + SFX) ==========
 void audio_update(void) {
 
     mixer_try_play();
-    /*  
-    // Check if there are any free audio buffers
-	  if (audio_can_write()) {
-		  // Select an audio buffer that we can write to
-		  short *buf = audio_write_begin();
-		  // Write to the audio buffer from the mixer
-		  mixer_poll(buf, audio_get_buffer_length());
-		  // Tell the audio system that the buffer has
-		  // been filled and is ready for playback
-		  audio_write_end();
-	  };
-      */
 }
 
 // ========== STOPPING FUNCTIONS ==========
 void music_stop(void) {
     mixer_ch_stop(CHANNEL_MUSIC);
-}
-
-// Stops both Fight and The Hunt Begins
-void sfx_stop(void) {
-    mixer_ch_stop(CHANNEL_SFX1);
 }
 
 // ========== CLEANUP FUNCTIONS ==========
@@ -92,13 +49,6 @@ void music_cleanup(void) {
     wav64_close(&music_wav);
 }
 
-void sfx_cleanup(void) {
-    mixer_ch_stop(CHANNEL_SFX1);
-    wav64_close(&sfx1_wav);
-    wav64_close(&sfx2_wav);
-}
-
 void audio_cleanup_all(void) {
     music_cleanup();
-    sfx_cleanup();
 }

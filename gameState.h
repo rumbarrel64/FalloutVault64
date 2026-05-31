@@ -4,7 +4,8 @@
 typedef enum {
     STATE_MENU,
     STATE_TUTORIAL,
-    STATE_GAME
+    STATE_GAME,
+    STATE_REVIEWS
 } GameState;
 
 extern GameState state;
